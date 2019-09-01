@@ -157,7 +157,10 @@ const useStyles2 = makeStyles(theme => ({
     width: "75%",
     padding: theme.spacing(3, 2),
     margin: "auto",
-    marginBottom: "5px"
+    marginBottom: "1px",
+    boxSizing: "border-box",
+    border: "1px solid grey",
+    boxShadow: "1px 2px grey"
   },
   typography: {
     margin: "5px"
@@ -280,7 +283,7 @@ function PostList(props) {
           horizontal: "left"
         }}
         open={snackbarState.open}
-        autoHideDuration={600}
+        autoHideDuration={2000}
         onClose={handleClose}
       >
         <MySnackbarContentWrapper

@@ -66,7 +66,7 @@ function PostForm(props) {
                 ...values,
                 key: key
               });
-              props.history.push("/post");
+              props.history.push("/");
             });
           }}
           render={({

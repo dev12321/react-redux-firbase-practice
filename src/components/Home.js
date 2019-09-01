@@ -19,7 +19,16 @@ function Home(props) {
       <AppBar>
         <Toolbar>
           <Link to={`/`}>
-            <Button color="inherit">Home</Button>
+            <Button color="inherit">
+              <Typography
+                variant="h6"
+                style={{
+                  color: "white"
+                }}
+              >
+                {"Home"}
+              </Typography>
+            </Button>
           </Link>
           <Typography
             variant="h6"
