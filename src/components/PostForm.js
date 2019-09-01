@@ -12,6 +12,11 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import { Formik } from "formik";
+import { withRouter } from "react-router-dom";
+import * as firebase from "./../util/util";
+import * as actions from "./../store/actions/post";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -38,57 +43,96 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SignIn() {
+function PostForm(props) {
   const classes = useStyles();
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
         <Typography component="h1" variant="h5">
           Add New Post
         </Typography>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign In
-          </Button>
-        </form>
+
+        <Formik
+          initialValues={{
+            title: "",
+            post: ""
+          }}
+          onSubmit={values => {
+            console.log(values);
+            firebase.addPost(values).then(key => {
+              props.addPost({
+                ...values,
+                key: key
+              });
+              props.history.push("/post");
+            });
+          }}
+          render={({
+            values,
+            errors,
+            touched,
+            setFieldValue,
+            handleChange,
+            handleSubmit
+          }) => (
+            <form onSubmit={handleSubmit}>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="title"
+                label="Title"
+                name="title"
+                onChange={handleChange}
+                autoFocus
+              />
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="post"
+                label="Post"
+                id="post"
+                onChange={handleChange}
+                multiline
+                rows={8}
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                Post
+              </Button>
+            </form>
+          )}
+        />
       </div>
     </Container>
   );
 }
+
+const matchStateToProps = state => {
+  return {
+    posts: state.postReducer.posts
+  };
+};
+
+const matchDispatchToProps = dispatch => {
+  return {
+    addPost: post => dispatch(actions.addPost(post)),
+    updatePost: (key, post) => dispatch(actions.updatePost(key, post))
+  };
+};
+
+export default connect(
+  matchStateToProps,
+  matchDispatchToProps
+)(withRouter(PostForm));

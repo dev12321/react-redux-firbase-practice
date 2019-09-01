@@ -31,13 +31,13 @@ export const fetchAllPost = async () => {
   return posts;
 };
 
-export const addPost = post => {
-  const key = database.ref("posts").push(post).key;
+export const addPost = async post => {
+  const key =await database.ref("posts").push(post).key;
   return key;
 };
 
-export const removePost = key => {
-  database.ref("posts/" + key).remove(() => true);
+export const removePost = async key => {
+  await database.ref("posts/" + key).remove(() => true);
 };
 
 export const updatePost = (key, post) => {

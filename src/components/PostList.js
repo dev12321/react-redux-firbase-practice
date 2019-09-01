@@ -8,6 +8,7 @@ import Container from "@material-ui/core/Container";
 import Fab from "@material-ui/core/Fab";
 import Grid from "@material-ui/core/Grid";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import { Link } from "react-router-dom";
 import Zoom from "@material-ui/core/Zoom";
 import {
   Paper,
@@ -23,6 +24,7 @@ import clsx from "clsx";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
 import InfoIcon from "@material-ui/icons/Info";
+import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
 import { amber, green } from "@material-ui/core/colors";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -213,14 +215,10 @@ function PostList(props) {
       <Toolbar id="back-to-top-anchor" />
       <Toolbar>
         <div class={classes.center}>
-          <Button
-            onClick={() => {
-              getPosts();
-              setIsPostLoaded(true);
-            }}
-          >
-            ADD NEW POST
-          </Button>
+          <Link to={`/post`}>
+            <Button>ADD NEW POST</Button>
+          </Link>
+
           <Button
             onClick={() => {
               getPosts();
@@ -236,15 +234,37 @@ function PostList(props) {
         {props.posts
           ? props.posts.map(post => {
               return (
-                <Grid item>
+                <Grid item key={post.key}>
                   <Paper class={classes.paper}>
-                    <Typography
-                      variant="h5"
-                      component="h3"
-                      class={classes.typography}
-                    >
-                      {post.title}
-                    </Typography>
+                    <Grid container>
+                      <Grid item>
+                        <Typography
+                          variant="h5"
+                          component="h3"
+                          class={classes.typography}
+                        >
+                          {post.title}
+                        </Typography>
+                      </Grid>
+                      <Grid item style={{ marginLeft: "auto" }}>
+                        <Button
+                          style={{ marginLeft: "auto" }}
+                          onClick={() => {
+                            firebase.removePost(post.key).then(key => {
+                              props.deletePost(post.key);
+                              setSnackbarState({
+                                open: true,
+                                message: "Successfully deleted the Post",
+                                varient: "success"
+                              });
+                            });
+                          }}
+                        >
+                          <DeleteIcon></DeleteIcon>
+                        </Button>
+                      </Grid>
+                    </Grid>
+
                     <Typography class={classes.typography} component="p">
                       {post.post}
                     </Typography>
@@ -290,8 +310,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     getPosts: handleSnackbar => dispatch(actions.fetchAllPosts(handleSnackbar)),
-    deletePost: (key, handleSnackbar) =>
-      dispatch(actions.removePost(key, handleSnackbar))
+    deletePost: key => dispatch(actions.removePost(key))
   };
 };
 

@@ -30,10 +30,4 @@ export const addPost = post => {
   };
 };
 
-// export const authSuccess = (token, userId) => {
-//     return {
-//         type: actionTypes.AUTH_SUCCESS,
-//         idToken: token,
-//         userId: userId
-//     };
-// };
+
