@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import AppBar from "@material-ui/core/AppBar";
 import { makeStyles } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
 import Fab from "@material-ui/core/Fab";
 import Grid from "@material-ui/core/Grid";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
@@ -157,13 +153,14 @@ const useStyles2 = makeStyles(theme => ({
     width: "75%",
     padding: theme.spacing(3, 2),
     margin: "auto",
-    marginBottom: "1px",
+    marginBottom: "10px",
     boxSizing: "border-box",
     border: "1px solid grey",
     boxShadow: "1px 2px grey"
   },
   typography: {
-    margin: "5px"
+    margin: "5px",
+    whiteSpace: "pre-wrap"
   },
   center: {
     margin: "auto"
@@ -172,16 +169,11 @@ const useStyles2 = makeStyles(theme => ({
 
 function PostList(props) {
   const classes = useStyles2();
-  const [isPostLoaded, setIsPostLoaded] = useState(false);
   const [snackbarState, setSnackbarState] = useState({
     open: false,
     message: "Dummmy",
     varient: "error"
   });
-
-  function handleSnackbar(message, varient) {
-    setSnackbarState({ message, varient, open: true });
-  }
 
   function handleClose(event, reason) {
     if (reason === "clickaway") {
@@ -190,17 +182,10 @@ function PostList(props) {
 
     setSnackbarState({ ...snackbarState, open: false });
   }
-  // function writeUserData() {
-  // firebase.database.ref("posts").push({
-  //   title: "Herz das verschwand faßt.",
-  //   post:
-  //     "Sea vero dolor aliquyam amet accusam at ipsum, amet lorem at sadipscing ipsum, justo takimata sit tempor et vero rebum no, voluptua invidunt et lorem sed ut. Tempor sadipscing est accusam lorem est eos. Tempor at est lorem eos nonumy eirmod elitr, rebum ipsum accusam amet est, eirmod ut justo et justo. Lorem eirmod sit et ipsum diam ut, no amet sit sadipscing dolores et. No clita takimata invidunt est sea, dolore gubergren ut amet dolor clita et sanctus stet, ea justo et sanctus magna gubergren et. Tempor erat at lorem kasd gubergren, diam est justo stet gubergren. Takimata ipsum."
-  // });
-  // }
+
   const getPosts = () => {
     firebase.fetchAllPost().then(posts => {
       props.getPosts(posts);
-      console.log(posts);
       setSnackbarState({
         open: true,
         message: "Successfully fetched the Posts",
@@ -208,24 +193,25 @@ function PostList(props) {
       });
     });
   };
-  if (!isPostLoaded) {
-    getPosts();
-    setIsPostLoaded(true);
-  }
 
   return (
     <React.Fragment>
       <Toolbar id="back-to-top-anchor" />
       <Toolbar>
-        <div class={classes.center}>
-          <Link to={`/post`}>
+        <div className={classes.center}>
+          <Link
+            style={{ textDecoration: "none" }}
+            to={{
+              pathname: `/post`,
+              state: { isEdit: false }
+            }}
+          >
             <Button>ADD NEW POST</Button>
           </Link>
 
           <Button
             onClick={() => {
               getPosts();
-              setIsPostLoaded(true);
             }}
           >
             REFRESH
@@ -238,16 +224,24 @@ function PostList(props) {
           ? props.posts.map(post => {
               return (
                 <Grid item key={post.key}>
-                  <Paper class={classes.paper}>
+                  <Paper className={classes.paper}>
                     <Grid container>
                       <Grid item>
-                        <Typography
-                          variant="h5"
-                          component="h3"
-                          class={classes.typography}
+                        <Link
+                          style={{ textDecoration: "none" }}
+                          to={{
+                            pathname: `/post`,
+                            state: { post, isEdit: true }
+                          }}
                         >
-                          {post.title}
-                        </Typography>
+                          <Typography
+                            variant="h5"
+                            component="h3"
+                            className={classes.typography}
+                          >
+                            {post.title}
+                          </Typography>
+                        </Link>
                       </Grid>
                       <Grid item style={{ marginLeft: "auto" }}>
                         <Button
@@ -268,7 +262,7 @@ function PostList(props) {
                       </Grid>
                     </Grid>
 
-                    <Typography class={classes.typography} component="p">
+                    <Typography className={classes.typography} component="p">
                       {post.post}
                     </Typography>
                   </Paper>
@@ -303,8 +297,6 @@ function PostList(props) {
 }
 
 const mapStateToProps = state => {
-  // console.log(typeof state.postReducer, state.postReducer, state);
-
   return {
     posts: state.postReducer.posts
   };

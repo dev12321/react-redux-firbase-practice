@@ -1,5 +1,4 @@
-import * as firebase from "firebase";
-import * as actions from "./../store/actions/post";
+import { initializeApp, database } from "firebase";
 
 var config = {
   apiKey: "AIzaSyDbwNI5FhYkPtY4LXFMyMoRCruGDQKDnLQ",
@@ -7,16 +6,16 @@ var config = {
   databaseURL: "https://my-app-a3576.firebaseio.com/"
   // storageBucket: "bucket.appspot.com"
 };
-firebase.initializeApp(config);
+initializeApp(config);
 
 // Get a reference to the database service
 
-export const database = firebase.database();
+export const firebaseDatabase = database();
 
 export const fetchAllPost = async () => {
   const posts = [];
 
- await database.ref("posts").once("value", snapshot => {
+  await firebaseDatabase.ref("posts").once("value", snapshot => {
     snapshot.forEach(childSnapshot => {
       const key = childSnapshot.key;
       const childData = childSnapshot.val();
@@ -32,14 +31,14 @@ export const fetchAllPost = async () => {
 };
 
 export const addPost = async post => {
-  const key =await database.ref("posts").push(post).key;
+  const key = await firebaseDatabase.ref("posts").push(post).key;
   return key;
 };
 
 export const removePost = async key => {
-  await database.ref("posts/" + key).remove(() => true);
+  await firebaseDatabase.ref("posts/" + key).remove();
 };
 
-export const updatePost = (key, post) => {
-  database.ref("posts/" + key).set(post, () => true);
+export const updatePost = async (key, post) => {
+  await firebaseDatabase.ref("posts/" + key).set(post);
 };

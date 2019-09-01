@@ -1,5 +1,4 @@
 import * as actionTypes from "../actions/actionTypes";
-import * as firebase from "./../../util/util";
 
 const initialState = {
   posts: []
@@ -24,21 +23,17 @@ export const removePost = (state, action) => {
 };
 
 export const updatePost = (state, action) => {
-  if (firebase.updatePost(action.post) === true) {
-    const posts = state.posts.map(el => {
-      if (el.key === action.key) {
-        return action.post;
-      } else {
-        return el;
-      }
-    });
-    return {
-      posts,
-      numberOfPosts: posts.length()
-    };
-  }
+  const posts = state.posts.map(el => {
+    if (el.key !== action.key) {
+      return el;
+    } else {
+      return { ...action.post, key: action.key };
+    }
+  });
+  return {
+    posts
+  };
 };
-
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.ADD_POST:

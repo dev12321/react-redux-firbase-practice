@@ -1,7 +1,7 @@
 import React from "react";
 import Home from "./components/Home";
 import { BrowserRouter } from "react-router-dom";
-import { createStore, applyMiddleware, compose, combineReducers } from "redux";
+import { createStore, combineReducers } from "redux";
 import { Provider } from "react-redux";
 import postReducer from "./store/reducers/post";
 

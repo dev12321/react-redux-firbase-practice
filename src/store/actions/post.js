@@ -1,4 +1,3 @@
-import { database } from "./../../util/util";
 import * as actionTypes from "./actionTypes";
 
 export const fetchAllPosts = posts => {
@@ -15,7 +14,7 @@ export const removePost = key => {
   };
 };
 
-export const updatePost = (post, key) => {
+export const updatePost = (key, post) => {
   return {
     type: actionTypes.UPDATE_POST,
     post: post,
@@ -29,5 +28,3 @@ export const addPost = post => {
     post: post
   };
 };
-
-

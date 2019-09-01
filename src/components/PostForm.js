@@ -1,14 +1,7 @@
 import React from "react";
-import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -45,6 +38,12 @@ const useStyles = makeStyles(theme => ({
 
 function PostForm(props) {
   const classes = useStyles();
+  let isEdit = false;
+  let post = { title: "", post: "" };
+  if (props.location.state) {
+    isEdit = props.location.state.isEdit;
+    post = props.location.state.post ? props.location.state.post : post;
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -56,18 +55,24 @@ function PostForm(props) {
 
         <Formik
           initialValues={{
-            title: "",
-            post: ""
+            title: post.title,
+            post: post.post
           }}
           onSubmit={values => {
-            console.log(values);
-            firebase.addPost(values).then(key => {
-              props.addPost({
-                ...values,
-                key: key
+            if (isEdit) {
+              firebase.updatePost(post.key, values).then(() => {
+                props.updatePost(post.key, values);
+                props.history.push("/");
               });
-              props.history.push("/");
-            });
+            } else {
+              firebase.addPost(values).then(key => {
+                props.addPost({
+                  ...values,
+                  key: key
+                });
+                props.history.push("/");
+              });
+            }
           }}
           render={({
             values,
@@ -87,6 +92,7 @@ function PostForm(props) {
                 label="Title"
                 name="title"
                 onChange={handleChange}
+                value={values.title}
                 autoFocus
               />
               <TextField
@@ -96,6 +102,7 @@ function PostForm(props) {
                 fullWidth
                 name="post"
                 label="Post"
+                value={values.post}
                 id="post"
                 onChange={handleChange}
                 multiline
@@ -109,7 +116,7 @@ function PostForm(props) {
                 color="primary"
                 className={classes.submit}
               >
-                Post
+                {isEdit ? "Update" : "Post"}
               </Button>
             </form>
           )}
